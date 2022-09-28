@@ -1,19 +1,14 @@
 package Game2022.game;
 
 public class common {
-	String tekst;
 
 	public common(String tekst) {
 		super();
-		this.tekst = tekst;
 	}
 
-	public String getTekst() {
-		return tekst;
-	}
 
-	public void setTekst(String tekst) {
-		this.tekst = tekst;
+	public Player makePlayers(String name){
+		return GameLogic.makePlayers(name);
 	}
 	
 
