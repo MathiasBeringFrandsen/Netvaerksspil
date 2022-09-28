@@ -16,22 +16,18 @@ public class ClientThread extends Thread {
     public void run(){
         while (true){
             try {
-
                 GameLogic.setPlayerList(modtagArraylist(new ArrayList<>(), input));
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
-//    public static void sendKoordinater(ArrayList<Person> personer, DataOutputStream outstream) throws IOException {
-//        String persons = "";
-//        for (int i = 0; i< personer.size(); i++){
-//            persons = persons + personer.get(i).getId()+ " " + personer.get(i).getNavn() + " " + personer.get(i).getBy() + "#";
-//        }
-//        outstream.writeBytes(persons);
-//    }
+    public static void sendKoordinater(Player player, int delta_x, int delta_y, String direction, DataOutputStream outstream) throws IOException {
+        String koordinater = "";
+            koordinater = player.name + " " + delta_x + " " + delta_y + " " + direction;
+        outstream.writeBytes(koordinater);
+    }
 
     public static ArrayList<Player> modtagArraylist(ArrayList<Player> players, BufferedReader instream) throws IOException {
         String[] playerArray = instream.readLine().split("#");
@@ -41,6 +37,7 @@ public class ClientThread extends Thread {
             System.out.println(thisplayer[0]);
             players.add(new Player(thisplayer[0], new pair(Integer.parseInt(thisplayer[1]), Integer.parseInt(thisplayer[2])), thisplayer[3]));
         }
+        System.out.println(players.toString());
         return players;
     }
 
