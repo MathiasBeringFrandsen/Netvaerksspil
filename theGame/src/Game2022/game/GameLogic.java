@@ -11,13 +11,12 @@ public static List<Player> players = new ArrayList<Player>();
 	public static Player me;
 	
 	
-	public static void makePlayers(String name) {
+	public static Player makePlayers(String name) {
 		pair p=getRandomFreePosition();
 		me = new Player(name,p,"up");
 		players.add(me);
-		p=getRandomFreePosition();
-		Player harry = new Player("Kaj",p,"up");
-		players.add(harry);
+
+		return me;
 	}
 	
 	public static pair getRandomFreePosition()

@@ -1,4 +1,6 @@
 package Game2022.game;
+import javafx.application.Application;
+
 import java.net.*;
 public class Server {
 	

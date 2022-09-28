@@ -1,4 +1,6 @@
 package Game2022.game;
+import javafx.application.Application;
+
 import java.net.*;
 import java.io.*;
 public class ServerThread extends Thread{
@@ -12,13 +14,12 @@ public class ServerThread extends Thread{
 	public void run() {
 		try {
 			BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connSocket.getInputStream()));
-			DataOutputStream outToClient = new DataOutputStream(connSocket.getOutputStream());
+			String newPlayerName = inFromClient.readLine();
+			GameLogic.makePlayers(newPlayerName);
+
 			
 			// Do the work and the communication with the client here	
 			// The following two lines are only an example
-			
-			String clientSentence = inFromClient.readLine();
-			outToClient.writeBytes("Hej"+ c.getTekst() + '\n' );
 		
 		} catch (IOException e) {
 			e.printStackTrace();
