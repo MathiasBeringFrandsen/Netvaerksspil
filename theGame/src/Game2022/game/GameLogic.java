@@ -9,7 +9,11 @@ import java.util.Random;
 public class GameLogic {
 public static List<Player> players = new ArrayList<Player>();	
 	public static Player me;
-	
+
+
+	public static void setPlayerList(ArrayList<Player> newPlayerList){
+		players = newPlayerList;
+	}
 	
 	public static void makePlayers(String name) {
 		pair p=getRandomFreePosition();
