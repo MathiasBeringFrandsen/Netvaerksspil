@@ -16,8 +16,6 @@ public static List<Player> players = new ArrayList<Player>();
 		me = new Player(name,p,"up");
 		players.add(me);
 		p=getRandomFreePosition();
-		Player harry = new Player("Kaj",p,"up");
-		players.add(harry);
 	}
 	
 	public static pair getRandomFreePosition()
