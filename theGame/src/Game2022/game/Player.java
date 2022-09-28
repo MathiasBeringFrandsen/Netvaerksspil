@@ -41,6 +41,8 @@ public class Player {
 		this.direction = direction;
 	}
 
+	public String getName(){return this.name;}
+
 	public void addPoints(int p) {
 		point+=p;
 	}

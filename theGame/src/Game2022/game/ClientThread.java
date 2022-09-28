@@ -24,12 +24,4 @@ public class ClientThread extends Thread {
         }
     }
 
-    public static void sendPersoner(ArrayList<Person> personer, DataOutputStream outstream) throws IOException {
-        String persons = "";
-        for (int i = 0; i< personer.size(); i++){
-            persons = persons + personer.get(i).getId()+ " " + personer.get(i).getNavn() + " " + personer.get(i).getBy() + "#";
-        }
-        outstream.writeBytes(persons);
-    }
-
 }
