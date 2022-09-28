@@ -15,13 +15,30 @@ public class ClientThread extends Thread {
     public void run(){
         while (true){
             try {
-                String arrayString;
-                arrayString = input.readLine();
+
+                GameLogic.setPlayerList(modtagArraylist(new ArrayList<>(), input));
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+//    public static void sendKoordinater(ArrayList<Person> personer, DataOutputStream outstream) throws IOException {
+//        String persons = "";
+//        for (int i = 0; i< personer.size(); i++){
+//            persons = persons + personer.get(i).getId()+ " " + personer.get(i).getNavn() + " " + personer.get(i).getBy() + "#";
+//        }
+//        outstream.writeBytes(persons);
+//    }
+
+    public static ArrayList<Player> modtagArraylist(ArrayList<Player> players, BufferedReader instream) throws IOException {
+        String[] playerArray = instream.readLine().split("#");
+        for (int i = 0; i < playerArray.length; i++) {
+            String[] thisplayer = playerArray[i].split("¤");
+            players.add(new Player(thisplayer[0], new pair(Integer.parseInt(thisplayer[1]), Integer.parseInt(thisplayer[2])), thisplayer[3]));
+        }
+        return players;
     }
 
 }
