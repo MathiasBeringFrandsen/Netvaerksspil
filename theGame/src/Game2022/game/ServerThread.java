@@ -4,23 +4,28 @@ import javafx.application.Application;
 import java.net.*;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ServerThread extends Thread{
 	Socket connSocket;
 	common c;
+	private DataOutputStream dataout;
 	
-	public ServerThread(Socket connSocket,common c) {
+	public ServerThread(Socket connSocket,common c) throws IOException {
 		this.connSocket = connSocket;
 		this.c=c; // Til Web-server opgaven skal denne ikke anvendes
+		this.dataout = new DataOutputStream(connSocket.getOutputStream());
+
 	}
 	public void run() {
 		try {
 			BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connSocket.getInputStream()));
 			String newPlayerName = inFromClient.readLine();
 			GameLogic.makePlayers(newPlayerName);
+			sendPlayers(GameLogic.players, dataout);
+
 			//return something;
 			while (true){
-//				GameLogic.updatePlayer();
 			}
 			
 			// Do the work and the communication with the client here	
@@ -45,11 +50,12 @@ public class ServerThread extends Thread{
 //		updateScoreTable();
 //	}
 
-	public static void sendPlayers(ArrayList<Player> players, DataOutputStream outstream) throws IOException {
-		String persons = "";
+	public static void sendPlayers(List<Player> players, DataOutputStream outstream) throws IOException {
+		String playerString = "";
 		for (int i = 0; i< players.size(); i++){
-			persons = persons + players.get(i).getName()+ " " + players.get(i).getXpos() + " " + players.get(i).getYpos() + " " + players.get(i).getDirection() + "#";
+			playerString = playerString + players.get(i).getName()+ " " + players.get(i).getXpos() + " " + players.get(i).getYpos() + " " + players.get(i).getDirection() + "#";
 		}
-		outstream.writeBytes(persons);
+		outstream.writeBytes(playerString + "\n");
+		System.out.println(playerString);
 	}
 }

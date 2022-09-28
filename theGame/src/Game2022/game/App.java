@@ -11,8 +11,9 @@ public class App {
 		DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
 		BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 		ClientThread in = new ClientThread(inFromServer);
+		in.start();
 		System.out.println("Indtast spillernavn");
-		outToServer.writeBytes(inFromUser.readLine());
+		outToServer.writeBytes(inFromUser.readLine() + "\n");
 		Application.launch(Gui.class);
 	}
 }
