@@ -14,14 +14,10 @@ public class ClientThread extends Thread {
     }
 
     public void run(){
+
         while (true){
             try {
-                int xPosOld = GameLogic.me.getXpos();
-                int yPosOld = GameLogic.me.getYpos();
                 GameLogic.setPlayerList(modtagArraylist(new ArrayList<>(), input));
-                if (GameLogic.me.getYpos() != yPosOld || GameLogic.me.getXpos() != xPosOld){
-
-                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
