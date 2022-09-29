@@ -22,11 +22,10 @@ public class ServerThread extends Thread{
 			BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connSocket.getInputStream()));
 			String newPlayerName = inFromClient.readLine();
 			GameLogic.makePlayers(newPlayerName);
+			sendPlayers(GameLogic.players, dataout);
 
 			//return something;
 			while (true){
-				modtagKoordinater(inFromClient);
-				sendPlayers(GameLogic.players, dataout);
 			}
 			
 			// Do the work and the communication with the client here	
@@ -37,15 +36,7 @@ public class ServerThread extends Thread{
 		}		
 		// do the work here
 	}
-	public static void modtagKoordinater(BufferedReader instream) throws IOException {
-		String[] movements = instream.readLine().split(" ");
-		GameLogic.updatePlayer(Integer.parseInt(movements[0]), Integer.parseInt(movements[1]), movements[2]);
-	}
-//
-//	public void modtagPlayerMoved(int delta_x, int delta_y, String direction) {
-//		GameLogic.updatePlayer(delta_x,delta_y,direction);
-//		updateScoreTable();
-//	}
+
 
 	public static void sendPlayers(List<Player> players, DataOutputStream outstream) throws IOException {
 		String playerString = "";
@@ -53,6 +44,5 @@ public class ServerThread extends Thread{
 			playerString = playerString + players.get(i).getName()+ " " + players.get(i).getXpos() + " " + players.get(i).getYpos() + " " + players.get(i).getDirection() + "#";
 		}
 		outstream.writeBytes(playerString + "\n");
-		System.out.println(playerString);
 	}
 }
