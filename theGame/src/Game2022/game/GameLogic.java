@@ -12,6 +12,7 @@ public class GameLogic {
 public static List<Player> players = new ArrayList<>();
 	public static Player me;
 	public static DataOutputStream outputStream;
+	public static ArrayList<DataOutputStream> outputStreams = new ArrayList<>();
 
 
 	public static void setPlayerList(ArrayList<Player> newPlayerList){
@@ -21,13 +22,17 @@ public static List<Player> players = new ArrayList<>();
 	public static void setOutputStream(DataOutputStream out){
 		outputStream = out;
 	}
+
+	public static void addOutputStream(DataOutputStream dataOutputStream){
+		outputStreams.add(dataOutputStream);
+	}
 	
 	public static void makePlayers(String name) {
 		pair p=getRandomFreePosition();
 		me = new Player(name,p,"up");
 		players.add(me);
 		try {
-			sendPlayers(GameLogic.players, outputStream);
+			sendPlayers(players);
 		}
 		catch(IOException e){
 			System.out.println(e.getMessage());
@@ -72,12 +77,14 @@ public static List<Player> players = new ArrayList<>();
 
 	}
 
-	public static void sendPlayers(List<Player> players, DataOutputStream outstream) throws IOException {
+	public static void sendPlayers(List<Player> players) throws IOException {
 		String playerString = "";
 		for (int i = 0; i< players.size(); i++){
 			playerString = playerString + players.get(i).getName()+ " " + players.get(i).getXpos() + " " + players.get(i).getYpos() + " " + players.get(i).getDirection() + "#";
 		}
-		outstream.writeBytes(playerString + "\n");
+		for (DataOutputStream outputStream : outputStreams){
+			outputStream.writeBytes(playerString + "\n");
+		}
 	}
 	
 	public static void updatePlayer(int delta_x, int delta_y, String direction)

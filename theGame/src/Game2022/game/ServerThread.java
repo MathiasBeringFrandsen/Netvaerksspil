@@ -18,6 +18,7 @@ public class ServerThread extends Thread{
 	}
 	public void run() {
 		try {
+			GameLogic.addOutputStream(new DataOutputStream(connSocket.getOutputStream()));
 			BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connSocket.getInputStream()));
 			String newPlayerName = inFromClient.readLine();
 			GameLogic.makePlayers(newPlayerName);

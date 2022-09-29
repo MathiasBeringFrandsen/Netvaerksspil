@@ -9,12 +9,12 @@ import java.util.Arrays;
 public class ClientThread extends Thread {
     private BufferedReader input;
 
-    public ClientThread(BufferedReader input) {
+    public ClientThread(BufferedReader input){
         this.input = input;
     }
 
-    public void run() {
-        while (true) {
+    public void run(){
+        while (true){
             try {
                 GameLogic.setPlayerList(modtagArraylist(new ArrayList<>(), input));
             } catch (IOException e) {
@@ -22,6 +22,7 @@ public class ClientThread extends Thread {
             }
         }
     }
+
 
     public static ArrayList<Player> modtagArraylist(ArrayList<Player> players, BufferedReader instream) throws IOException {
         String[] playerArray = instream.readLine().split("#");
