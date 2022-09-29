@@ -9,20 +9,18 @@ import java.util.List;
 public class ServerThread extends Thread{
 	Socket connSocket;
 	common c;
-	private DataOutputStream dataout;
+	private BufferedReader dataInputStream;
 	
 	public ServerThread(Socket connSocket,common c) throws IOException {
 		this.connSocket = connSocket;
 		this.c=c; // Til Web-server opgaven skal denne ikke anvendes
-		this.dataout = new DataOutputStream(connSocket.getOutputStream());
-
+		dataInputStream = new BufferedReader(new InputStreamReader(connSocket.getInputStream()));
 	}
 	public void run() {
 		try {
 			BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connSocket.getInputStream()));
 			String newPlayerName = inFromClient.readLine();
 			GameLogic.makePlayers(newPlayerName);
-			sendPlayers(GameLogic.players, dataout);
 
 			//return something;
 			while (true){
@@ -37,12 +35,14 @@ public class ServerThread extends Thread{
 		// do the work here
 	}
 
+	public static void modtagKoordinater(int delta_x, int delta_y, String direction, BufferedReader inputReader) throws IOException {
+		String koordinater = inputReader.readLine();
+		String[] seperatkoordinater = koordinater.split(" ");
+		GameLogic.updatePlayer(Integer.parseInt(seperatkoordinater[0]), Integer.parseInt(seperatkoordinater[1]), seperatkoordinater[3]);
 
-	public static void sendPlayers(List<Player> players, DataOutputStream outstream) throws IOException {
-		String playerString = "";
-		for (int i = 0; i< players.size(); i++){
-			playerString = playerString + players.get(i).getName()+ " " + players.get(i).getXpos() + " " + players.get(i).getYpos() + " " + players.get(i).getDirection() + "#";
-		}
-		outstream.writeBytes(playerString + "\n");
+
 	}
+
+
+
 }

@@ -26,7 +26,12 @@ public static List<Player> players = new ArrayList<>();
 		pair p=getRandomFreePosition();
 		me = new Player(name,p,"up");
 		players.add(me);
-		p=getRandomFreePosition();
+		try {
+			sendPlayers(GameLogic.players, outputStream);
+		}
+		catch(IOException e){
+			System.out.println(e.getMessage());
+		}
 	}
 	
 	public static pair getRandomFreePosition()
@@ -65,6 +70,14 @@ public static List<Player> players = new ArrayList<>();
 			System.out.println(e.getMessage());
 		}
 
+	}
+
+	public static void sendPlayers(List<Player> players, DataOutputStream outstream) throws IOException {
+		String playerString = "";
+		for (int i = 0; i< players.size(); i++){
+			playerString = playerString + players.get(i).getName()+ " " + players.get(i).getXpos() + " " + players.get(i).getYpos() + " " + players.get(i).getDirection() + "#";
+		}
+		outstream.writeBytes(playerString + "\n");
 	}
 	
 	public static void updatePlayer(int delta_x, int delta_y, String direction)
