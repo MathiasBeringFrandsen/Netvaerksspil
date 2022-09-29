@@ -9,24 +9,18 @@ import java.util.Arrays;
 public class ClientThread extends Thread {
     private BufferedReader input;
 
-    public ClientThread(BufferedReader input){
+    public ClientThread(BufferedReader input) {
         this.input = input;
     }
 
-    public void run(){
-        while (true){
+    public void run() {
+        while (true) {
             try {
                 GameLogic.setPlayerList(modtagArraylist(new ArrayList<>(), input));
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-    }
-
-    public static void sendKoordinater(Player player, int delta_x, int delta_y, String direction, DataOutputStream outstream) throws IOException {
-        String koordinater = "";
-            koordinater = player.name + " " + delta_x + " " + delta_y + " " + direction;
-        outstream.writeBytes(koordinater);
     }
 
     public static ArrayList<Player> modtagArraylist(ArrayList<Player> players, BufferedReader instream) throws IOException {

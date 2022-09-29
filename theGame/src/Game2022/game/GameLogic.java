@@ -1,5 +1,8 @@
 package Game2022.game;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -9,10 +12,15 @@ import java.util.Random;
 public class GameLogic {
 public static List<Player> players = new ArrayList<Player>();	
 	public static Player me;
+	public static DataOutputStream outputStream;
 
 
 	public static void setPlayerList(ArrayList<Player> newPlayerList){
 		players = newPlayerList;
+	}
+
+	public static void setOutputStream(DataOutputStream out){
+		outputStream = out;
 	}
 	
 	public static void makePlayers(String name) {
@@ -45,6 +53,19 @@ public static List<Player> players = new ArrayList<Player>();
 		}
 		pair p = new pair(x,y);
 		return p;
+	}
+
+
+
+	public static void sendKoordinater(int delta_x, int delta_y, String direction){
+		try {
+			String koordinater = "";
+			koordinater = delta_x + " " + delta_y + " " + direction;
+			outputStream.writeBytes(koordinater);
+		} catch (IOException e){
+			System.out.println(e.getMessage());
+		}
+
 	}
 	
 	public static void updatePlayer(int delta_x, int delta_y, String direction)

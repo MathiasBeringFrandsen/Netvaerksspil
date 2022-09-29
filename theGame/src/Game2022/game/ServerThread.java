@@ -36,19 +36,7 @@ public class ServerThread extends Thread{
 		}		
 		// do the work here
 	}
-//	public static void modtagPlayerMoved(BufferedReader instream) throws IOException {
-//		String[] movements = instream.readLine().split("#");
-//		for (int i = 0; i < personArray.length; i++) {
-//			String[] thisPerson = personArray[i].split(" ");
-//			personer.add(new Person(Integer.parseInt(thisPerson[0]), thisPerson[1], thisPerson[2]));
-//		}
-//		return personer;
-//	}
-//
-//	public void modtagPlayerMoved(int delta_x, int delta_y, String direction) {
-//		GameLogic.updatePlayer(delta_x,delta_y,direction);
-//		updateScoreTable();
-//	}
+
 
 	public static void sendPlayers(List<Player> players, DataOutputStream outstream) throws IOException {
 		String playerString = "";
@@ -56,6 +44,5 @@ public class ServerThread extends Thread{
 			playerString = playerString + players.get(i).getName()+ " " + players.get(i).getXpos() + " " + players.get(i).getYpos() + " " + players.get(i).getDirection() + "#";
 		}
 		outstream.writeBytes(playerString + "\n");
-		System.out.println(playerString);
 	}
 }
