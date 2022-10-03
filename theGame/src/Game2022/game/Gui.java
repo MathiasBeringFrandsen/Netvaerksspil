@@ -29,7 +29,7 @@ public class Gui extends Application {
 	
 
 	private static Label[][] fields;
-	private static TextArea scoreList;
+	private TextArea scoreList;
 	
 
 
@@ -146,7 +146,7 @@ public class Gui extends Application {
 		placePlayerOnScreen(newpos,direction);
 	}
 	
-	public static void updateScoreTable()
+	public void updateScoreTable()
 	{
 		Platform.runLater(() -> {
 			scoreList.setText(getScoreList());
@@ -157,7 +157,7 @@ public class Gui extends Application {
 		updateScoreTable();
 	}
 	
-	public static String getScoreList() {
+	public String getScoreList() {
 		StringBuffer b = new StringBuffer(100);
 		for (Player p : GameLogic.players) {
 			b.append(p+"\r\n");

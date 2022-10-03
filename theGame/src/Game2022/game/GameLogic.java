@@ -83,7 +83,6 @@ public static List<Player> players = new ArrayList<>();
 		for (Player p : players){
 			p.getDataOut().writeBytes(playerString + "\n");
 		}
-		Gui.updateScoreTable();
 	}
 	
 	public static void updatePlayer(int delta_x, int delta_y, String direction)
