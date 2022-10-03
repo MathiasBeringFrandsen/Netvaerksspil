@@ -22,8 +22,10 @@ public class ServerThread extends Thread{
 			String newPlayerName = inFromClient.readLine();
 			Player player = GameLogic.makePlayers(newPlayerName);
 			player.setDataOut(new DataOutputStream(connSocket.getOutputStream()));
+			GameLogic.sendPlayers();
 			//return something;
 			while (true){
+
 			}
 			
 			// Do the work and the communication with the client here	

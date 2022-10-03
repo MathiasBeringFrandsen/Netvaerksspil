@@ -12,7 +12,7 @@ public class GameLogic {
 public static List<Player> players = new ArrayList<>();
 	public static Player me;
 	public static DataOutputStream outputStream;
-	public static ArrayList<DataOutputStream> outputStreams = new ArrayList<>();
+
 
 
 	public static void setPlayerList(ArrayList<Player> newPlayerList){
@@ -34,12 +34,6 @@ public static List<Player> players = new ArrayList<>();
 		pair p=getRandomFreePosition();
 		me = new Player(name,p,"up");
 		players.add(me);
-		try {
-			sendPlayers(players);
-		}
-		catch(IOException e){
-			System.out.println(e.getMessage());
-		}
 		return me;
 	}
 	
@@ -81,7 +75,7 @@ public static List<Player> players = new ArrayList<>();
 
 	}
 
-	public static void sendPlayers(List<Player> players) throws IOException {
+	public static void sendPlayers() throws IOException {
 		String playerString = "";
 		for (int i = 0; i< players.size(); i++){
 			playerString = playerString + players.get(i).getName()+ " " + players.get(i).getXpos() + " " + players.get(i).getYpos() + " " + players.get(i).getDirection() + "#";
@@ -89,6 +83,7 @@ public static List<Player> players = new ArrayList<>();
 		for (Player p : players){
 			p.getDataOut().writeBytes(playerString + "\n");
 		}
+		Gui.updateScoreTable();
 	}
 	
 	public static void updatePlayer(int delta_x, int delta_y, String direction)
