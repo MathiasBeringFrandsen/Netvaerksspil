@@ -9,6 +9,7 @@ import java.util.List;
 public class ServerThread extends Thread{
 	Socket connSocket;
 	common c;
+	static Player player;
 	private BufferedReader dataInputStream;
 	
 	public ServerThread(Socket connSocket,common c) throws IOException {
@@ -20,7 +21,7 @@ public class ServerThread extends Thread{
 		try {
 			BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connSocket.getInputStream()));
 			String newPlayerName = inFromClient.readLine();
-			Player player = GameLogic.makePlayers(newPlayerName);
+			player = GameLogic.makePlayers(newPlayerName);
 			player.setDataOut(new DataOutputStream(connSocket.getOutputStream()));
 			GameLogic.sendPlayers();
 			//return something;
@@ -41,7 +42,7 @@ public class ServerThread extends Thread{
 		String koordinater = inputReader.readLine();
 		String[] seperatkoordinater = koordinater.split("#");
 		System.out.println(koordinater);
-		GameLogic.updatePlayer(Integer.parseInt(seperatkoordinater[0]), Integer.parseInt(seperatkoordinater[1]), seperatkoordinater[2]);
+		GameLogic.updatePlayer(Integer.parseInt(seperatkoordinater[0]), Integer.parseInt(seperatkoordinater[1]), seperatkoordinater[2],player);
 
 
 	}

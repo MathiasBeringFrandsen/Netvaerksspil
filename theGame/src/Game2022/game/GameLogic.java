@@ -10,7 +10,7 @@ import java.util.Random;
 
 public class GameLogic {
 public static List<Player> players = new ArrayList<>();
-	public static Player me;
+	public static Player player;
 	public static DataOutputStream outputStream;
 
 
@@ -33,9 +33,9 @@ public static List<Player> players = new ArrayList<>();
 	
 	public static Player makePlayers(String name) {
 		pair p=getRandomFreePosition();
-		me = new Player(name,p,"up");
-		players.add(me);
-		return me;
+		player = new Player(name,p,"up");
+		players.add(player);
+		return player;
 	}
 	
 	public static pair getRandomFreePosition()
@@ -87,30 +87,28 @@ public static List<Player> players = new ArrayList<>();
 		}
 	}
 	
-	public static void updatePlayer(int delta_x, int delta_y, String direction)
+	public static void updatePlayer(int delta_x, int delta_y, String direction, Player player)
 	{
-		me.direction = direction;
-		int x = me.getXpos(),y = me.getYpos();
+
+		player.direction = direction;
+		int x = player.getXpos(),y = GameLogic.player.getYpos();
 
 		if (Generel.board[y+delta_y].charAt(x+delta_x)=='w') {
-			me.addPoints(-1);
+			player.addPoints(-1);
 		} 
 		else {
 			// collision detection
 			Player p = getPlayerAt(x+delta_x,y+delta_y);
 			if (p!=null) {
-              me.addPoints(10);
+              player.addPoints(10);
               //update the other player
               p.addPoints(-10);
               pair pa = getRandomFreePosition();
               p.setLocation(pa);
-              pair oldpos = new pair(x+delta_x,y+delta_y);
-              Gui.movePlayerOnScreen(oldpos,pa,p.direction);
 			} else 
-				me.addPoints(1);
-			pair oldpos = me.getLocation();
+				player.addPoints(1);
 			pair newpos = new pair(x+delta_x,y+delta_y);
-			me.setLocation(newpos);
+			player.setLocation(newpos);
 			try {
 				sendPlayers();
 			} catch (IOException e) {
