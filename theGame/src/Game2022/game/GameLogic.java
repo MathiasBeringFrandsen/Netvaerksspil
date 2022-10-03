@@ -86,9 +86,8 @@ public static List<Player> players = new ArrayList<>();
 		for (int i = 0; i< players.size(); i++){
 			playerString = playerString + players.get(i).getName()+ " " + players.get(i).getXpos() + " " + players.get(i).getYpos() + " " + players.get(i).getDirection() + "#";
 		}
-		for (DataOutputStream outputStream : outputStreams){
-			System.out.println(playerString);
-			outputStream.writeBytes(playerString + "\n");
+		for (Player p : players){
+			p.getDataOut().writeBytes(playerString + "\n");
 		}
 	}
 	
