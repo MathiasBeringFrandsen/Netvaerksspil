@@ -9,7 +9,7 @@ import java.util.List;
 public class ServerThread extends Thread{
 	Socket connSocket;
 	common c;
-	static Player player;
+	Player player;
 	private BufferedReader dataInputStream;
 	
 	public ServerThread(Socket connSocket,common c) throws IOException {
@@ -38,11 +38,11 @@ public class ServerThread extends Thread{
 		// do the work here
 	}
 
-	public static void modtagKoordinater(BufferedReader inputReader) throws IOException {
+	public void modtagKoordinater(BufferedReader inputReader) throws IOException {
 		String koordinater = inputReader.readLine();
 		String[] seperatkoordinater = koordinater.split("#");
 		System.out.println(koordinater);
-		GameLogic.updatePlayer(Integer.parseInt(seperatkoordinater[0]), Integer.parseInt(seperatkoordinater[1]), seperatkoordinater[2],player);
+		GameLogic.updatePlayer(Integer.parseInt(seperatkoordinater[0]), Integer.parseInt(seperatkoordinater[1]), seperatkoordinater[2], player);
 
 
 	}

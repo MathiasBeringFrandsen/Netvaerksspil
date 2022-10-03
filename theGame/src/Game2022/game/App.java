@@ -8,7 +8,7 @@ public class App {
 
 	public static void main(String[] args) throws Exception{
 		BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
-		Socket clientSocket= new Socket("10.10.139.220",12010);
+		Socket clientSocket= new Socket("localhost",6789);
 		DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
 		BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 		GameLogic.setOutputStream(outToServer);

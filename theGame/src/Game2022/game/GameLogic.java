@@ -81,9 +81,11 @@ public static List<Player> players = new ArrayList<>();
 		for (int i = 0; i< players.size(); i++){
 			playerString = playerString + players.get(i).getName()+ " " + players.get(i).getXpos() + " " + players.get(i).getYpos() + " " + players.get(i).getDirection() + "#";
 		}
+		System.out.println(playerString);
 		for (Player p : players){
+
 			p.getDataOut().writeBytes(playerString + "\n");
-			System.out.println(playerString);
+
 		}
 	}
 	
@@ -91,7 +93,7 @@ public static List<Player> players = new ArrayList<>();
 	{
 
 		player.direction = direction;
-		int x = player.getXpos(),y = GameLogic.player.getYpos();
+		int x = player.getXpos(),y = player.getYpos();
 
 		if (Generel.board[y+delta_y].charAt(x+delta_x)=='w') {
 			player.addPoints(-1);
