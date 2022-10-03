@@ -146,8 +146,6 @@ public class Gui extends Application {
 		placePlayerOnScreen(newpos,direction);
 	}
 	
-
-	
 	public void updateScoreTable()
 	{
 		Platform.runLater(() -> {

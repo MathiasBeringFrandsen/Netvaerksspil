@@ -16,7 +16,14 @@ public static List<Player> players = new ArrayList<>();
 
 
 	public static void setPlayerList(ArrayList<Player> newPlayerList){
+		for (Player player : players){
+			Gui.removePlayerOnScreen(player.getLocation());
+		}
 		players = newPlayerList;
+		System.out.println(players.size());
+		for (Player player : players) {
+			Gui.placePlayerOnScreen(player.location, player.direction);
+		}
 	}
 
 	public static void setOutputStream(DataOutputStream out){
@@ -83,6 +90,7 @@ public static List<Player> players = new ArrayList<>();
 			playerString = playerString + players.get(i).getName()+ " " + players.get(i).getXpos() + " " + players.get(i).getYpos() + " " + players.get(i).getDirection() + "#";
 		}
 		for (DataOutputStream outputStream : outputStreams){
+			System.out.println(playerString);
 			outputStream.writeBytes(playerString + "\n");
 		}
 	}
@@ -109,7 +117,8 @@ public static List<Player> players = new ArrayList<>();
 			} else 
 				me.addPoints(1);
 			pair oldpos = me.getLocation();
-			pair newpos = new pair(x+delta_x,y+delta_y); 
+			pair newpos = new pair(x+delta_x,y+delta_y);
+			sendKoordinater(delta_x,delta_y,direction);
 			Gui.movePlayerOnScreen(oldpos,newpos,direction);
 			me.setLocation(newpos);
 		}

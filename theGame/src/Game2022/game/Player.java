@@ -1,6 +1,5 @@
 package Game2022.game;
 
-import javax.xml.crypto.Data;
 import java.io.DataOutputStream;
 
 public class Player {
@@ -8,7 +7,6 @@ public class Player {
 	pair location;
 	int point;
 	String direction;
-	DataOutputStream dataOut;
 
 	public Player(String name, pair loc, String direction) {
 		this.name = name;

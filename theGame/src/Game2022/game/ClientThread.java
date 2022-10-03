@@ -1,7 +1,6 @@
 package Game2022.game;
 
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,6 +13,11 @@ public class ClientThread extends Thread {
     }
 
     public void run(){
+        try {
+            Thread.sleep(4000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         while (true){
             try {
                 GameLogic.setPlayerList(modtagArraylist(new ArrayList<>(), input));
