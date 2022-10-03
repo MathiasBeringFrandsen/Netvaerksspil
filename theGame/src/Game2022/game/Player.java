@@ -53,6 +53,12 @@ public class Player {
 	public void addPoints(int p) {
 		point+=p;
 	}
+	public int getPoint(){
+		return point;
+	}
+	public void setPoint(int point){
+		this.point = point;
+	}
 	public String toString() {
 		return name+":   "+point;
 	}

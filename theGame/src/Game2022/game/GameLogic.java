@@ -79,7 +79,7 @@ public static List<Player> players = new ArrayList<>();
 	public static void sendPlayers() throws IOException {
 		String playerString = "";
 		for (int i = 0; i< players.size(); i++){
-			playerString = playerString + players.get(i).getName()+ " " + players.get(i).getXpos() + " " + players.get(i).getYpos() + " " + players.get(i).getDirection() + "#";
+			playerString = playerString + players.get(i).getName()+ " " + players.get(i).getXpos() + " " + players.get(i).getYpos() + " " + players.get(i).getDirection() + players.get(i).getPoint() + "#";
 		}
 		System.out.println(playerString);
 		for (Player p : players){
@@ -89,7 +89,7 @@ public static List<Player> players = new ArrayList<>();
 		}
 	}
 	
-	public static void updatePlayer(int delta_x, int delta_y, String direction, Player player)
+	public static synchronized void updatePlayer(int delta_x, int delta_y, String direction, Player player)
 	{
 
 		player.direction = direction;
@@ -118,8 +118,6 @@ public static List<Player> players = new ArrayList<>();
 			}
 
 		}
-		
-		
 	}
 	
 	public static Player getPlayerAt(int x, int y) {
@@ -130,8 +128,6 @@ public static List<Player> players = new ArrayList<>();
 		}
 		return null;
 	}
-	
-	
 	
 
 }
