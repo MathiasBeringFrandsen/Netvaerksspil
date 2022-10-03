@@ -20,6 +20,7 @@ public static List<Player> players = new ArrayList<>();
 			Gui.removePlayerOnScreen(player.getLocation());
 		}
 		players = newPlayerList;
+		System.out.println(newPlayerList.toString());
 		System.out.println(players.size());
 		for (Player player : players) {
 			Gui.placePlayerOnScreen(player.location, player.direction);
@@ -67,8 +68,8 @@ public static List<Player> players = new ArrayList<>();
 	public static void sendKoordinater(int delta_x, int delta_y, String direction){
 		try {
 			String koordinater;
-			koordinater = delta_x + " " + delta_y + " " + direction;
-			outputStream.writeBytes(koordinater);
+			koordinater = delta_x + "#" + delta_y + "#" + direction;
+			outputStream.writeBytes(koordinater + "\n");
 		} catch (IOException e){
 			System.out.println(e.getMessage());
 		}
@@ -82,6 +83,7 @@ public static List<Player> players = new ArrayList<>();
 		}
 		for (Player p : players){
 			p.getDataOut().writeBytes(playerString + "\n");
+			System.out.println(playerString);
 		}
 	}
 	
@@ -108,9 +110,13 @@ public static List<Player> players = new ArrayList<>();
 				me.addPoints(1);
 			pair oldpos = me.getLocation();
 			pair newpos = new pair(x+delta_x,y+delta_y);
-			sendKoordinater(delta_x,delta_y,direction);
-			Gui.movePlayerOnScreen(oldpos,newpos,direction);
 			me.setLocation(newpos);
+			try {
+				sendPlayers();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
 		}
 		
 		

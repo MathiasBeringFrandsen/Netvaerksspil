@@ -8,27 +8,24 @@ import java.util.Arrays;
 public class ClientThread extends Thread {
     private BufferedReader input;
 
-    public ClientThread(BufferedReader input){
+    public ClientThread(BufferedReader input) {
         this.input = input;
     }
 
-    public void run(){
+    public void run() {
         try {
             Thread.sleep(4000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        while (true){
-            try {
+            while (true) {
                 GameLogic.setPlayerList(modtagArraylist(new ArrayList<>(), input));
-            } catch (IOException e) {
-                e.printStackTrace();
             }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
 
-    public static ArrayList<Player> modtagArraylist(ArrayList<Player> players, BufferedReader instream) throws IOException {
+    public static ArrayList<Player> modtagArraylist(ArrayList<Player> players, BufferedReader instream) throws
+            IOException {
         String[] playerArray = instream.readLine().split("#");
         System.out.println(Arrays.toString(playerArray));
         for (int i = 0; i < playerArray.length; i++) {

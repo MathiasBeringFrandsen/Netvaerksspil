@@ -25,7 +25,7 @@ public class ServerThread extends Thread{
 			GameLogic.sendPlayers();
 			//return something;
 			while (true){
-
+			modtagKoordinater(inFromClient);
 			}
 			
 			// Do the work and the communication with the client here	
@@ -37,10 +37,11 @@ public class ServerThread extends Thread{
 		// do the work here
 	}
 
-	public static void modtagKoordinater(int delta_x, int delta_y, String direction, BufferedReader inputReader) throws IOException {
+	public static void modtagKoordinater(BufferedReader inputReader) throws IOException {
 		String koordinater = inputReader.readLine();
-		String[] seperatkoordinater = koordinater.split(" ");
-		GameLogic.updatePlayer(Integer.parseInt(seperatkoordinater[0]), Integer.parseInt(seperatkoordinater[1]), seperatkoordinater[3]);
+		String[] seperatkoordinater = koordinater.split("#");
+		System.out.println(koordinater);
+		GameLogic.updatePlayer(Integer.parseInt(seperatkoordinater[0]), Integer.parseInt(seperatkoordinater[1]), seperatkoordinater[2]);
 
 
 	}
