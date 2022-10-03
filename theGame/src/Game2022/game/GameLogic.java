@@ -22,12 +22,8 @@ public static List<Player> players = new ArrayList<>();
 	public static void setOutputStream(DataOutputStream out){
 		outputStream = out;
 	}
-
-	public static void addOutputStream(DataOutputStream dataOutputStream){
-		outputStreams.add(dataOutputStream);
-	}
 	
-	public static void makePlayers(String name) {
+	public static Player makePlayers(String name) {
 		pair p=getRandomFreePosition();
 		me = new Player(name,p,"up");
 		players.add(me);
@@ -37,6 +33,7 @@ public static List<Player> players = new ArrayList<>();
 		catch(IOException e){
 			System.out.println(e.getMessage());
 		}
+		return me;
 	}
 	
 	public static pair getRandomFreePosition()

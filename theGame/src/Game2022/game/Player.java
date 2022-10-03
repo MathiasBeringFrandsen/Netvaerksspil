@@ -45,6 +45,9 @@ public class Player {
 		this.direction = direction;
 	}
 
+	public DataOutputStream getDataOut(){return this.dataOut;}
+	public void setDataOut(DataOutputStream dataout){this.dataOut = dataout;}
+
 	public String getName(){return this.name;}
 
 	public void addPoints(int p) {
@@ -53,4 +56,6 @@ public class Player {
 	public String toString() {
 		return name+":   "+point;
 	}
+
+
 }

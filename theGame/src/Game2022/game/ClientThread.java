@@ -30,7 +30,8 @@ public class ClientThread extends Thread {
         for (int i = 0; i < playerArray.length; i++) {
             String[] thisplayer = playerArray[i].split(" ");
             System.out.println(thisplayer[0]);
-            players.add(new Player(thisplayer[0], new pair(Integer.parseInt(thisplayer[1]), Integer.parseInt(thisplayer[2])), thisplayer[3]));
+            Player player = new Player(thisplayer[0], new pair(Integer.parseInt(thisplayer[1]), Integer.parseInt(thisplayer[2])), thisplayer[3]);
+            players.add(player);
         }
         System.out.println(players.toString());
         return players;
