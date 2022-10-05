@@ -136,6 +136,11 @@ public class Gui extends Application {
 			fields[oldpos.getX()][oldpos.getY()].setGraphic(new ImageView(image_floor));
 			});
 	}
+	public static void removeProjectileOnScreen(pair oldpos) {
+		Platform.runLater(() -> {
+			fields[oldpos.getX()][oldpos.getY()].setGraphic(new ImageView(image_floor));
+		});
+	}
 	
 	public static void placePlayerOnScreen(pair newpos,String direction) {
 		Platform.runLater(() -> {

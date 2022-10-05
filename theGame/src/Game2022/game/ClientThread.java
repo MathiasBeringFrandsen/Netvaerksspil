@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ClientThread extends Thread {
     private BufferedReader input;
@@ -48,14 +50,14 @@ public class ClientThread extends Thread {
     }
 
 
-    public static ArrayList<Projectile> recieveProjectiles(String line){
-        ArrayList<Projectile> projectiles = new ArrayList<>();
+    public static HashMap<Projectile, ArrayList<Projectile>> recieveProjectiles(String line){
+        HashMap<Projectile, ArrayList<Projectile>> projectiles = new HashMap<>();
         String[] projectileArray = line.split("#");
         for (int i = 0; i < projectileArray.length; i++){
             String[] thisProjectile = projectileArray[i].split(" ");
             System.out.println(Arrays.toString(thisProjectile));
             Projectile projectile = new Projectile(new pair(Integer.parseInt(thisProjectile[0]), Integer.parseInt(thisProjectile[1])), thisProjectile[2]);
-            projectiles.add(projectile);
+            projectiles.put(projectile, new ArrayList<>());
         }
         return projectiles;
     }

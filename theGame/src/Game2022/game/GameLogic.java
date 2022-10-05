@@ -10,36 +10,59 @@ public class GameLogic {
 	public static List<Player> players = new ArrayList<>();
 	public static Player player;
 	public static DataOutputStream outputStream;
-	public static List<Projectile> projectiles = new ArrayList<>();
+	public static Map<Projectile, ArrayList<Projectile>> projectiles = new HashMap<>();
 
 
 	public static void setPlayerList(ArrayList<Player> newPlayerList){
 		for (Player player : players){
 			Gui.removePlayerOnScreen(player.getLocation());
 		}
+		for (Projectile p : projectiles.keySet()){
+			for (Projectile p2 : projectiles.get(p)){
+				Gui.removeProjectileOnScreen(p2.location);
+			}
+			Gui.removeProjectileOnScreen(p.location);
+		}
+
 		players = newPlayerList;
 		System.out.println(newPlayerList.toString());
 		System.out.println(players.size());
 		for (Player player : players) {
 			Gui.placePlayerOnScreen(player.location, player.direction);
 		}
-		moveProjectilesForward();
 	}
 
-	public static void setProjectiles(ArrayList<Projectile> ps){
+	public static void setProjectiles(HashMap<Projectile, ArrayList<Projectile>> ps){
+		for (Projectile p : projectiles.keySet()){
+			for (Projectile p2 : projectiles.get(p)){
+				Gui.removeProjectileOnScreen(p2.location);
+			}
+			Gui.removeProjectileOnScreen(p.location);
+		}
 		projectiles = ps;
 		ArrayList<Projectile> deleteProjectiles = new ArrayList<>();
-		for (Projectile p : projectiles){
+		moveProjectilesForward();
+		for (Projectile p : projectiles.keySet()){
 			if (Generel.board[p.getLocation().getY()].charAt(p.getLocation().getX())==' ') {
 				Gui.placeProjectileOnScreen(p, "start");
 			}
 			else{
 				deleteProjectiles.add(p);
 			}
+			System.out.println(projectiles.get(p).size());
+			for (int i = 0; i < projectiles.get(p).size(); i++){
+				if (i < projectiles.get(p).size()-1){
+					Gui.placeProjectileOnScreen(projectiles.get(p).get(i), "middle");
+				}
+				else{
+					Gui.placeProjectileOnScreen(projectiles.get(p).get(i), "end");
+				}
+			}
 		}
 		for (Projectile p : deleteProjectiles){
 			projectiles.remove(p);
 		}
+
 	}
 
 	public static void setOutputStream(DataOutputStream out){
@@ -64,7 +87,7 @@ public class GameLogic {
 			Random r = new Random();
 			x = Math.abs(r.nextInt()%18) +1;
 			y = Math.abs(r.nextInt()%18) +1;
-			if (Generel.board[y].charAt(x)==' ') // er det gulv ?
+			if (Generel.board[y].charAt(x)==' ' && getProjectileAt(x, y) == null) // er det gulv ?
 			{
 				foundfreepos = true;
 				for (Player p: players) {
@@ -91,10 +114,11 @@ public class GameLogic {
 
 	public static void sendProjectileToClient(Projectile projectile) throws IOException {
 		String projectileString = "";
-		projectiles.add(projectile);
-		for (int i = 0; i < projectiles.size(); i++){
-			projectileString = projectileString + projectiles.get(i).getLocation().getX() + " " + projectiles.get(i).getLocation().getY() + " " + projectiles.get(i).getDirection() + "#";
+		projectiles.put(projectile, new ArrayList<>());
+		for (Projectile projectile1 : projectiles.keySet()){
+			projectileString = projectileString + projectile1.getLocation().getX() + " " + projectile1.getLocation().getY() + " " + projectile1.getDirection() + "#";
 		}
+
 		for (Player p : players){
 			p.getDataOut().writeBytes(projectileString + "\n");
 		}
@@ -138,7 +162,6 @@ public class GameLogic {
 		else {
 			// collision detection
 			Player p = getPlayerAt(x+delta_x,y+delta_y);
-			Projectile projectile = getProjectileAt(x+delta_x, y+delta_y);
 			if (p!=null) {
               player.addPoints(10);
               //update the other player
@@ -146,15 +169,13 @@ public class GameLogic {
               pair pa = getRandomFreePosition();
               p.setLocation(pa);
 			}
-			else if(projectile != null){
-				projectiles.remove(projectile);
-			}
 			else
 				player.addPoints(1);
 			pair newpos = new pair(x+delta_x,y+delta_y);
 			player.setLocation(newpos);
 			try {
 				sendPlayers();
+				projectiles.clear();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -180,7 +201,12 @@ public class GameLogic {
 	}
 
 	public static Projectile getProjectileAt(int x, int y) {
-		for (Projectile p : projectiles) {
+		for (Projectile p : projectiles.keySet()) {
+			for (Projectile p2 : projectiles.get(p)){
+				if (p2.location.getX()==x && p2.location.getY()==y) {
+					return p;
+				}
+			}
 			if (p.location.getX()==x && p.location.getY()==y) {
 				return p;
 			}
@@ -189,54 +215,51 @@ public class GameLogic {
 	}
 
 	public static void moveProjectilesForward(){
-		for (Projectile p : projectiles){
-			boolean end = false;
-			int xPos = p.getLocation().getX();
-			int yPos = p.getLocation().getY();
-				switch (p.getDirection()) {
-					case "up":
-						if (Generel.board[p.getLocation().getY()-1].charAt(p.getLocation().getX())==' '){
-							p.setLocation(new pair(xPos, yPos - 1));
-						}
-						else{
-							end = true;
-						}
+		for (Projectile p : projectiles.keySet()){
+			ArrayList<Projectile> projectilesToAdd = new ArrayList<>();
+			for (int i = 1; i <= 20; i++){
+				if (p.direction.equals("up")) {
+					if (Generel.board[p.getLocation().getY() - i].charAt(p.getLocation().getX()) == ' ') {
+						Projectile newProjectile = new Projectile(new pair(p.location.getX(), p.location.getY() - i), p.direction);
+						projectilesToAdd.add(newProjectile);
+					}
+					else{
 						break;
-					case "down":
-						if (Generel.board[p.getLocation().getY()+1].charAt(p.getLocation().getX())==' '){
-							p.setLocation(new pair(xPos, yPos + 1));
-						}
-						else{
-							end = true;
-						}
-						break;
-					case "left":
-						if (Generel.board[p.getLocation().getY()].charAt(p.getLocation().getX()-1)==' '){
-							p.setLocation(new pair(xPos - 1, yPos));
-						}
-						else{
-							end = true;
-						}
-						break;
-					case "right":
-						if (Generel.board[p.getLocation().getY()].charAt(p.getLocation().getX()+1)==' '){
-							p.setLocation(new pair(xPos + 1, yPos));
-						}
-						else{
-							end = true;
-						}
-						break;
-					default:
-						break;
+					}
+					projectiles.replace(p,projectilesToAdd);
 				}
-				if (!end){
-					Gui.placeProjectileOnScreen(p, "middle");
+				if (p.direction.equals("down")) {
+					if (Generel.board[p.getLocation().getY() + i].charAt(p.getLocation().getX()) == ' ') {
+						Projectile newProjectile = new Projectile(new pair(p.location.getX(), p.location.getY()+i), p.direction);
+						projectilesToAdd.add(newProjectile);
+					}
+					else{
+						projectiles.replace(p,projectilesToAdd);
+						break;
+					}
 				}
-				else{
-					Gui.placeProjectileOnScreen(p, "end");
+				if (p.direction.equals("left")) {
+					if (Generel.board[p.getLocation().getY()].charAt(p.getLocation().getX()-i) == ' ') {
+						Projectile newProjectile = new Projectile(new pair(p.location.getX()-i, p.location.getY()), p.direction);
+						projectilesToAdd.add(newProjectile);
+					}
+					else{
+						projectiles.replace(p,projectilesToAdd);
+						break;
+					}
+
 				}
+				if (p.direction.equals("right")) {
+					if (Generel.board[p.getLocation().getY()].charAt(p.getLocation().getX()+i) == ' ') {
+						Projectile newProjectile = new Projectile(new pair(p.location.getX()+i, p.location.getY()), p.direction);
+						projectilesToAdd.add(newProjectile);
+					}
+					else{
+						projectiles.replace(p,projectilesToAdd);
+						break;
+					}
+				}
+			}
 		}
 	}
-	
-
 }
