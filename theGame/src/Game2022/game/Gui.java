@@ -25,6 +25,7 @@ public class Gui extends Application {
 	public static Image image_floor;
 	public static Image image_wall;
 	public static Image hero_right,hero_left,hero_up,hero_down;
+	public static Image fire_up, fire_down, fire_left, fire_right;
 
 	
 
@@ -67,6 +68,11 @@ public class Gui extends Application {
 			hero_up     = new Image(getClass().getResourceAsStream("Image/heroUp.png"),size,size,false,false);
 			hero_down   = new Image(getClass().getResourceAsStream("Image/heroDown.png"),size,size,false,false);
 
+			fire_up     = new Image(getClass().getResourceAsStream("Image/fireUp.png"),size,size,false,false);
+			fire_down   = new Image(getClass().getResourceAsStream("Image/fireDown.png"),size,size,false,false);
+			fire_left   = new Image(getClass().getResourceAsStream("Image/fireLeft.png"),size,size,false,false);
+			fire_right  = new Image(getClass().getResourceAsStream("Image/fireRight.png"),size,size,false,false);
+
 			fields = new Label[20][20];
 			for (int j=0; j<20; j++) {
 				for (int i=0; i<20; i++) {
@@ -100,7 +106,8 @@ public class Gui extends Application {
 				case DOWN:  playerMoved(0,+1,"down");  break;
 				case LEFT:  playerMoved(-1,0,"left");  break;
 				case RIGHT: playerMoved(+1,0,"right"); break;
-				case ESCAPE:System.exit(0); 
+				case SPACE: playerShoot(); break;
+				case ESCAPE:System.exit(0);
 				default: break;
 				}
 			});
@@ -139,13 +146,33 @@ public class Gui extends Application {
 			};
 			});
 	}
+
+	public static void placeProjectileOnScreen(Projectile projectile){
+		Platform.runLater(() -> {
+			String direction = projectile.getDirection();
+			int newx = projectile.location.getX();
+			int newy = projectile.location.getY();
+			if (direction.equals("right")) {
+				fields[newx][newy].setGraphic(new ImageView(fire_right));
+			};
+			if (direction.equals("left")) {
+				fields[newx][newy].setGraphic(new ImageView(fire_left));
+			};
+			if (direction.equals("up")) {
+				fields[newx][newy].setGraphic(new ImageView(fire_up));
+			};
+			if (direction.equals("down")) {
+				fields[newx][newy].setGraphic(new ImageView(fire_down));
+			};
+		});
+	}
 	
 	public static void movePlayerOnScreen(pair oldpos,pair newpos,String direction)
 	{
 		removePlayerOnScreen(oldpos);
 		placePlayerOnScreen(newpos,direction);
 	}
-	
+
 	public void updateScoreTable()
 	{
 		Platform.runLater(() -> {
@@ -155,6 +182,11 @@ public class Gui extends Application {
 	public void playerMoved(int delta_x, int delta_y, String direction){
 		GameLogic.sendKoordinater(delta_x,delta_y,direction);
 		updateScoreTable();
+	}
+
+	public void playerShoot(){
+		System.out.println("Space Clicked!");
+		GameLogic.sendProjectileToServer();
 	}
 	
 	public String getScoreList() {

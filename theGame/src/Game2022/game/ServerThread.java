@@ -1,5 +1,6 @@
 package Game2022.game;
 import javafx.application.Application;
+import javafx.util.Pair;
 
 import java.net.*;
 import java.io.*;
@@ -26,7 +27,14 @@ public class ServerThread extends Thread{
 			GameLogic.sendPlayers();
 			//return something;
 			while (true){
-			modtagKoordinater(inFromClient);
+				String line = inFromClient.readLine();
+
+				if (!line.equals("projectile")){
+					modtagKoordinater(line);
+				}
+				else{
+					recieveProjectiles();
+				}
 			}
 			
 			// Do the work and the communication with the client here	
@@ -38,13 +46,26 @@ public class ServerThread extends Thread{
 		// do the work here
 	}
 
-	public void modtagKoordinater(BufferedReader inputReader) throws IOException {
-		String koordinater = inputReader.readLine();
+	public void modtagKoordinater(String line) throws IOException {
+		String koordinater = line;
 		String[] seperatkoordinater = koordinater.split("#");
 		System.out.println(koordinater);
 		GameLogic.updatePlayer(Integer.parseInt(seperatkoordinater[0]), Integer.parseInt(seperatkoordinater[1]), seperatkoordinater[2], player);
+	}
 
-
+	public void recieveProjectiles() throws IOException {
+		System.out.println("Recieved");
+		int xPos = 0;
+		int yPos = 0;
+		switch (player.getDirection()) {
+			case "up":  xPos = player.getXpos(); yPos = player.getYpos()-1; break;
+			case "down":  xPos = player.getXpos(); yPos = player.getYpos()+1; break;
+			case "left":  xPos = player.getXpos()-1; yPos = player.getYpos(); break;
+			case "right":  xPos = player.getXpos()+1; yPos = player.getYpos(); break;
+			default: break;
+		}
+		Projectile projectile = new Projectile(new pair(xPos, yPos), player.getDirection());
+		GameLogic.sendProjectileToClient(projectile);
 	}
 
 

@@ -2,17 +2,15 @@ package Game2022.game;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
+import java.util.*;
 
 
 public class GameLogic {
-public static List<Player> players = new ArrayList<>();
+
+	public static List<Player> players = new ArrayList<>();
 	public static Player player;
 	public static DataOutputStream outputStream;
-
+	public static List<Projectile> projectiles = new ArrayList<>();
 
 
 	public static void setPlayerList(ArrayList<Player> newPlayerList){
@@ -24,6 +22,13 @@ public static List<Player> players = new ArrayList<>();
 		System.out.println(players.size());
 		for (Player player : players) {
 			Gui.placePlayerOnScreen(player.location, player.direction);
+		}
+	}
+
+	public static void setProjectiles(ArrayList<Projectile> ps){
+		projectiles = ps;
+		for (Projectile p : projectiles){
+			Gui.placeProjectileOnScreen(p);
 		}
 	}
 
@@ -63,6 +68,29 @@ public static List<Player> players = new ArrayList<>();
 		return p;
 	}
 
+	public static void sendProjectileToServer() {
+		try {
+			System.out.println("Send!");
+			outputStream.writeBytes("projectile\n");
+		}
+		catch (IOException e){
+			System.out.println("IoException goddamnit");
+		}
+
+	}
+
+	public static void sendProjectileToClient(Projectile projectile) throws IOException {
+		String projectileString = "";
+		projectiles.add(projectile);
+		for (int i = 0; i< projectiles.size(); i++){
+			projectileString = projectileString + projectiles.get(i).getLocation().getX() + " " + projectiles.get(i).getLocation().getY() + " " + projectiles.get(i).getDirection() + "#";
+		}
+		for (Player p : players){
+			p.getDataOut().writeBytes(projectileString + "\n");
+		}
+
+	}
+
 
 
 	public static void sendKoordinater(int delta_x, int delta_y, String direction){
@@ -79,7 +107,7 @@ public static List<Player> players = new ArrayList<>();
 	public static void sendPlayers() throws IOException {
 		String playerString = "";
 		for (int i = 0; i< players.size(); i++){
-			playerString = playerString + players.get(i).getName()+ " " + players.get(i).getXpos() + " " + players.get(i).getYpos() + " " + players.get(i).getDirection() + players.get(i).getPoint() + "#";
+			playerString = playerString + players.get(i).getName()+ " " + players.get(i).getXpos() + " " + players.get(i).getYpos() + " " + players.get(i).getDirection() + " " + players.get(i).getPoint() + "#";
 		}
 		System.out.println(playerString);
 		for (Player p : players){
@@ -91,7 +119,6 @@ public static List<Player> players = new ArrayList<>();
 	
 	public static synchronized void updatePlayer(int delta_x, int delta_y, String direction, Player player)
 	{
-
 		player.direction = direction;
 		int x = player.getXpos(),y = player.getYpos();
 
@@ -101,6 +128,7 @@ public static List<Player> players = new ArrayList<>();
 		else {
 			// collision detection
 			Player p = getPlayerAt(x+delta_x,y+delta_y);
+			Projectile projectile = getProjectileAt(x+delta_x, y+delta_y);
 			if (p!=null) {
               player.addPoints(10);
               //update the other player
@@ -119,10 +147,26 @@ public static List<Player> players = new ArrayList<>();
 
 		}
 	}
+
+	public static void updateProjectile(Projectile projectile){
+		if (!projectiles.contains(projectile)){
+			projectiles.add(projectile);
+			sendProjectileToServer();
+		}
+	}
 	
 	public static Player getPlayerAt(int x, int y) {
 		for (Player p : players) {
 			if (p.getXpos()==x && p.getYpos()==y) {
+				return p;
+			}
+		}
+		return null;
+	}
+
+	public static Projectile getProjectileAt(int x, int y) {
+		for (Projectile p : projectiles) {
+			if (p.location.getX()==x && p.location.getY()==y) {
 				return p;
 			}
 		}

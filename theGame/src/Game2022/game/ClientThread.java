@@ -16,7 +16,16 @@ public class ClientThread extends Thread {
         try {
             Thread.sleep(4000);
             while (true) {
-                GameLogic.setPlayerList(modtagArraylist(new ArrayList<>(), input));
+                String line = input.readLine();
+                String[] checkLine = line.split("#");
+                String[] checkLine2 = checkLine[0].split(" ");
+                System.out.println(line.split(" ").length);
+                if (checkLine2.length != 3){
+                    GameLogic.setPlayerList(modtagArraylist(new ArrayList<>(), line));
+                }
+                else{
+                    GameLogic.setProjectiles(recieveProjectiles(line));
+                }
             }
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
@@ -24,9 +33,8 @@ public class ClientThread extends Thread {
     }
 
 
-    public static ArrayList<Player> modtagArraylist(ArrayList<Player> players, BufferedReader instream) throws
-            IOException {
-        String[] playerArray = instream.readLine().split("#");
+    public static ArrayList<Player> modtagArraylist(ArrayList<Player> players, String line) throws IOException {
+        String[] playerArray = line.split("#");
         System.out.println(Arrays.toString(playerArray));
         for (int i = 0; i < playerArray.length; i++) {
             String[] thisplayer = playerArray[i].split(" ");
@@ -37,6 +45,19 @@ public class ClientThread extends Thread {
         }
         System.out.println(players.toString());
         return players;
+    }
+
+
+    public static ArrayList<Projectile> recieveProjectiles(String line){
+        ArrayList<Projectile> projectiles = new ArrayList<>();
+        String[] projectileArray = line.split("#");
+        for (int i = 0; i < projectileArray.length; i++){
+            String[] thisProjectile = projectileArray[i].split(" ");
+            System.out.println(Arrays.toString(thisProjectile));
+            Projectile projectile = new Projectile(new pair(Integer.parseInt(thisProjectile[0]), Integer.parseInt(thisProjectile[1])), thisProjectile[2]);
+            projectiles.add(projectile);
+        }
+        return projectiles;
     }
 
 }
