@@ -23,12 +23,22 @@ public class GameLogic {
 		for (Player player : players) {
 			Gui.placePlayerOnScreen(player.location, player.direction);
 		}
+		moveProjectilesForward();
 	}
 
 	public static void setProjectiles(ArrayList<Projectile> ps){
 		projectiles = ps;
+		ArrayList<Projectile> deleteProjectiles = new ArrayList<>();
 		for (Projectile p : projectiles){
-			Gui.placeProjectileOnScreen(p);
+			if (Generel.board[p.getLocation().getY()].charAt(p.getLocation().getX())==' ') {
+				Gui.placeProjectileOnScreen(p, "start");
+			}
+			else{
+				deleteProjectiles.add(p);
+			}
+		}
+		for (Projectile p : deleteProjectiles){
+			projectiles.remove(p);
 		}
 	}
 
@@ -82,7 +92,7 @@ public class GameLogic {
 	public static void sendProjectileToClient(Projectile projectile) throws IOException {
 		String projectileString = "";
 		projectiles.add(projectile);
-		for (int i = 0; i< projectiles.size(); i++){
+		for (int i = 0; i < projectiles.size(); i++){
 			projectileString = projectileString + projectiles.get(i).getLocation().getX() + " " + projectiles.get(i).getLocation().getY() + " " + projectiles.get(i).getDirection() + "#";
 		}
 		for (Player p : players){
@@ -151,13 +161,14 @@ public class GameLogic {
 
 		}
 	}
-
+	/*
 	public static void updateProjectile(Projectile projectile){
 		if (!projectiles.contains(projectile)){
 			projectiles.add(projectile);
 			sendProjectileToServer();
 		}
 	}
+	*/
 	
 	public static Player getPlayerAt(int x, int y) {
 		for (Player p : players) {
@@ -175,6 +186,56 @@ public class GameLogic {
 			}
 		}
 		return null;
+	}
+
+	public static void moveProjectilesForward(){
+		for (Projectile p : projectiles){
+			boolean end = false;
+			int xPos = p.getLocation().getX();
+			int yPos = p.getLocation().getY();
+				switch (p.getDirection()) {
+					case "up":
+						if (Generel.board[p.getLocation().getY()-1].charAt(p.getLocation().getX())==' '){
+							p.setLocation(new pair(xPos, yPos - 1));
+						}
+						else{
+							end = true;
+						}
+						break;
+					case "down":
+						if (Generel.board[p.getLocation().getY()+1].charAt(p.getLocation().getX())==' '){
+							p.setLocation(new pair(xPos, yPos + 1));
+						}
+						else{
+							end = true;
+						}
+						break;
+					case "left":
+						if (Generel.board[p.getLocation().getY()].charAt(p.getLocation().getX()-1)==' '){
+							p.setLocation(new pair(xPos - 1, yPos));
+						}
+						else{
+							end = true;
+						}
+						break;
+					case "right":
+						if (Generel.board[p.getLocation().getY()].charAt(p.getLocation().getX()+1)==' '){
+							p.setLocation(new pair(xPos + 1, yPos));
+						}
+						else{
+							end = true;
+						}
+						break;
+					default:
+						break;
+				}
+				if (!end){
+					Gui.placeProjectileOnScreen(p, "middle");
+				}
+				else{
+					Gui.placeProjectileOnScreen(p, "end");
+				}
+		}
 	}
 	
 
