@@ -135,7 +135,11 @@ public class GameLogic {
               p.addPoints(-10);
               pair pa = getRandomFreePosition();
               p.setLocation(pa);
-			} else 
+			}
+			else if(projectile != null){
+				projectiles.remove(projectile);
+			}
+			else
 				player.addPoints(1);
 			pair newpos = new pair(x+delta_x,y+delta_y);
 			player.setLocation(newpos);
