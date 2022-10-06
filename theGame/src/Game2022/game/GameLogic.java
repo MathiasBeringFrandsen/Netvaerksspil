@@ -2,29 +2,67 @@ package Game2022.game;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
+import java.util.*;
 
 
 public class GameLogic {
-public static List<Player> players = new ArrayList<>();
+
+	public static List<Player> players = new ArrayList<>();
 	public static Player player;
 	public static DataOutputStream outputStream;
-
+	public static Map<Projectile, ArrayList<Projectile>> projectiles = new HashMap<>();
 
 
 	public static void setPlayerList(ArrayList<Player> newPlayerList){
 		for (Player player : players){
 			Gui.removePlayerOnScreen(player.getLocation());
 		}
+		for (Projectile p : projectiles.keySet()){
+			for (Projectile p2 : projectiles.get(p)){
+				Gui.removeProjectileOnScreen(p2.location);
+			}
+			Gui.removeProjectileOnScreen(p.location);
+		}
+
 		players = newPlayerList;
 		System.out.println(newPlayerList.toString());
 		System.out.println(players.size());
 		for (Player player : players) {
 			Gui.placePlayerOnScreen(player.location, player.direction);
 		}
+	}
+
+	public static void setProjectiles(HashMap<Projectile, ArrayList<Projectile>> ps){
+		for (Projectile p : projectiles.keySet()){
+			for (Projectile p2 : projectiles.get(p)){
+				Gui.removeProjectileOnScreen(p2.location);
+			}
+			Gui.removeProjectileOnScreen(p.location);
+		}
+		projectiles = ps;
+		ArrayList<Projectile> deleteProjectiles = new ArrayList<>();
+		moveProjectilesForward();
+		for (Projectile p : projectiles.keySet()){
+			if (Generel.board[p.getLocation().getY()].charAt(p.getLocation().getX())==' ') {
+				Gui.placeProjectileOnScreen(p, "start");
+			}
+			else{
+				deleteProjectiles.add(p);
+			}
+			System.out.println(projectiles.get(p).size());
+			for (int i = 0; i < projectiles.get(p).size(); i++){
+				if (i < projectiles.get(p).size()-1){
+					Gui.placeProjectileOnScreen(projectiles.get(p).get(i), "middle");
+				}
+				else{
+					Gui.placeProjectileOnScreen(projectiles.get(p).get(i), "end");
+				}
+			}
+		}
+		for (Projectile p : deleteProjectiles){
+			projectiles.remove(p);
+		}
+
 	}
 
 	public static void setOutputStream(DataOutputStream out){
@@ -49,7 +87,7 @@ public static List<Player> players = new ArrayList<>();
 			Random r = new Random();
 			x = Math.abs(r.nextInt()%18) +1;
 			y = Math.abs(r.nextInt()%18) +1;
-			if (Generel.board[y].charAt(x)==' ') // er det gulv ?
+			if (Generel.board[y].charAt(x)==' ' && getProjectileAt(x, y) == null) // er det gulv ?
 			{
 				foundfreepos = true;
 				for (Player p: players) {
@@ -61,6 +99,30 @@ public static List<Player> players = new ArrayList<>();
 		}
 		pair p = new pair(x,y);
 		return p;
+	}
+
+	public static void sendProjectileToServer() {
+		try {
+			System.out.println("Send!");
+			outputStream.writeBytes("projectile\n");
+		}
+		catch (IOException e){
+			System.out.println("IoException goddamnit");
+		}
+
+	}
+
+	public static void sendProjectileToClient(Projectile projectile) throws IOException {
+		String projectileString = "";
+		projectiles.put(projectile, new ArrayList<>());
+		for (Projectile projectile1 : projectiles.keySet()){
+			projectileString = projectileString + projectile1.getLocation().getX() + " " + projectile1.getLocation().getY() + " " + projectile1.getDirection() + "#";
+		}
+
+		for (Player p : players){
+			p.getDataOut().writeBytes(projectileString + "\n");
+		}
+
 	}
 
 
@@ -91,7 +153,6 @@ public static List<Player> players = new ArrayList<>();
 	
 	public static synchronized void updatePlayer(int delta_x, int delta_y, String direction, Player player)
 	{
-
 		player.direction = direction;
 		int x = player.getXpos(),y = player.getYpos();
 
@@ -107,18 +168,28 @@ public static List<Player> players = new ArrayList<>();
               p.addPoints(-10);
               pair pa = getRandomFreePosition();
               p.setLocation(pa);
-			} else 
+			}
+			else
 				player.addPoints(1);
 			pair newpos = new pair(x+delta_x,y+delta_y);
 			player.setLocation(newpos);
 			try {
 				sendPlayers();
+				projectiles.clear();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 
 		}
 	}
+	/*
+	public static void updateProjectile(Projectile projectile){
+		if (!projectiles.contains(projectile)){
+			projectiles.add(projectile);
+			sendProjectileToServer();
+		}
+	}
+	*/
 	
 	public static Player getPlayerAt(int x, int y) {
 		for (Player p : players) {
@@ -128,6 +199,67 @@ public static List<Player> players = new ArrayList<>();
 		}
 		return null;
 	}
-	
 
+	public static Projectile getProjectileAt(int x, int y) {
+		for (Projectile p : projectiles.keySet()) {
+			for (Projectile p2 : projectiles.get(p)){
+				if (p2.location.getX()==x && p2.location.getY()==y) {
+					return p;
+				}
+			}
+			if (p.location.getX()==x && p.location.getY()==y) {
+				return p;
+			}
+		}
+		return null;
+	}
+
+	public static void moveProjectilesForward(){
+		for (Projectile p : projectiles.keySet()){
+			ArrayList<Projectile> projectilesToAdd = new ArrayList<>();
+			for (int i = 1; i <= 20; i++){
+				if (p.direction.equals("up")) {
+					if (Generel.board[p.getLocation().getY() - i].charAt(p.getLocation().getX()) == ' ') {
+						Projectile newProjectile = new Projectile(new pair(p.location.getX(), p.location.getY() - i), p.direction);
+						projectilesToAdd.add(newProjectile);
+					}
+					else{
+						break;
+					}
+					projectiles.replace(p,projectilesToAdd);
+				}
+				if (p.direction.equals("down")) {
+					if (Generel.board[p.getLocation().getY() + i].charAt(p.getLocation().getX()) == ' ') {
+						Projectile newProjectile = new Projectile(new pair(p.location.getX(), p.location.getY()+i), p.direction);
+						projectilesToAdd.add(newProjectile);
+					}
+					else{
+						projectiles.replace(p,projectilesToAdd);
+						break;
+					}
+				}
+				if (p.direction.equals("left")) {
+					if (Generel.board[p.getLocation().getY()].charAt(p.getLocation().getX()-i) == ' ') {
+						Projectile newProjectile = new Projectile(new pair(p.location.getX()-i, p.location.getY()), p.direction);
+						projectilesToAdd.add(newProjectile);
+					}
+					else{
+						projectiles.replace(p,projectilesToAdd);
+						break;
+					}
+
+				}
+				if (p.direction.equals("right")) {
+					if (Generel.board[p.getLocation().getY()].charAt(p.getLocation().getX()+i) == ' ') {
+						Projectile newProjectile = new Projectile(new pair(p.location.getX()+i, p.location.getY()), p.direction);
+						projectilesToAdd.add(newProjectile);
+					}
+					else{
+						projectiles.replace(p,projectilesToAdd);
+						break;
+					}
+				}
+			}
+		}
+	}
 }

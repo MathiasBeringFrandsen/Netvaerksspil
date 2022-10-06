@@ -25,6 +25,7 @@ public class Gui extends Application {
 	public static Image image_floor;
 	public static Image image_wall;
 	public static Image hero_right,hero_left,hero_up,hero_down;
+	public static Image fire_up, fire_down, fire_left, fire_right, fire_vertical, fire_horizontal, fire_wallNorth, fire_wallSouth, fire_wallWest, fire_wallEast;
 
 	
 
@@ -67,6 +68,20 @@ public class Gui extends Application {
 			hero_up     = new Image(getClass().getResourceAsStream("Image/heroUp.png"),size,size,false,false);
 			hero_down   = new Image(getClass().getResourceAsStream("Image/heroDown.png"),size,size,false,false);
 
+			fire_up     = new Image(getClass().getResourceAsStream("Image/fireUp.png"),size,size,false,false);
+			fire_down   = new Image(getClass().getResourceAsStream("Image/fireDown.png"),size,size,false,false);
+			fire_left   = new Image(getClass().getResourceAsStream("Image/fireLeft.png"),size,size,false,false);
+			fire_right  = new Image(getClass().getResourceAsStream("Image/fireRight.png"),size,size,false,false);
+
+			fire_vertical    = new Image(getClass().getResourceAsStream("Image/fireVertical.png"),size,size,false,false);
+			fire_horizontal   = new Image(getClass().getResourceAsStream("Image/fireHorizontal.png"),size,size,false,false);
+
+			fire_wallNorth	= new Image(getClass().getResourceAsStream("Image/fireWallNorth.png"),size,size,false,false);
+			fire_wallSouth	= new Image(getClass().getResourceAsStream("Image/fireWallSouth.png"),size,size,false,false);
+			fire_wallWest	= new Image(getClass().getResourceAsStream("Image/fireWallWest.png"),size,size,false,false);
+			fire_wallEast	= new Image(getClass().getResourceAsStream("Image/fireWallEast.png"),size,size,false,false);
+
+
 			fields = new Label[20][20];
 			for (int j=0; j<20; j++) {
 				for (int i=0; i<20; i++) {
@@ -100,7 +115,8 @@ public class Gui extends Application {
 				case DOWN:  playerMoved(0,+1,"down");  break;
 				case LEFT:  playerMoved(-1,0,"left");  break;
 				case RIGHT: playerMoved(+1,0,"right"); break;
-				case ESCAPE:System.exit(0); 
+				case SPACE: playerShoot(); break;
+				case ESCAPE:System.exit(0);
 				default: break;
 				}
 			});
@@ -119,6 +135,11 @@ public class Gui extends Application {
 		Platform.runLater(() -> {
 			fields[oldpos.getX()][oldpos.getY()].setGraphic(new ImageView(image_floor));
 			});
+	}
+	public static void removeProjectileOnScreen(pair oldpos) {
+		Platform.runLater(() -> {
+			fields[oldpos.getX()][oldpos.getY()].setGraphic(new ImageView(image_floor));
+		});
 	}
 	
 	public static void placePlayerOnScreen(pair newpos,String direction) {
@@ -139,13 +160,69 @@ public class Gui extends Application {
 			};
 			});
 	}
+
+	public static void placeProjectileOnScreen(Projectile projectile, String type){
+		Platform.runLater(() -> {
+			ImageView graphic;
+			String direction = projectile.getDirection();
+			int newx = projectile.location.getX();
+			int newy = projectile.location.getY();
+			if (direction.equals("right")) {
+				if (type.equals("start")) {
+					fields[newx][newy].setGraphic(new ImageView(fire_right));
+				}
+				else if (type.equals("middle")) {
+					fields[newx][newy].setGraphic(new ImageView(fire_horizontal));
+				}
+				else{
+					fields[newx][newy].setGraphic(new ImageView(fire_wallEast));
+				}
+			}
+
+			if (direction.equals("left")) {
+				if (type.equals("start")) {
+					fields[newx][newy].setGraphic(new ImageView(fire_left));
+				}
+				else if (type.equals("middle")){
+					fields[newx][newy].setGraphic(new ImageView(fire_horizontal));
+				}
+				else{
+					fields[newx][newy].setGraphic(new ImageView(fire_wallWest));
+				}
+			}
+
+			if (direction.equals("up")) {
+				if (type.equals("start")) {
+					fields[newx][newy].setGraphic(new ImageView(fire_up));
+				}
+				else if (type.equals("middle")) {
+					fields[newx][newy].setGraphic(new ImageView(fire_vertical));
+				}
+				else{
+					fields[newx][newy].setGraphic(new ImageView(fire_wallNorth));
+				}
+			}
+
+			if (direction.equals("down")) {
+				if (type.equals("start")) {
+					fields[newx][newy].setGraphic(new ImageView(fire_down));
+				}
+				else if (type.equals("middle")) {
+					fields[newx][newy].setGraphic(new ImageView(fire_vertical));
+				}
+				else{
+					fields[newx][newy].setGraphic(new ImageView(fire_wallSouth));
+				}
+			};
+		});
+	}
 	
 	public static void movePlayerOnScreen(pair oldpos,pair newpos,String direction)
 	{
 		removePlayerOnScreen(oldpos);
 		placePlayerOnScreen(newpos,direction);
 	}
-	
+
 	public void updateScoreTable()
 	{
 		Platform.runLater(() -> {
@@ -155,6 +232,11 @@ public class Gui extends Application {
 	public void playerMoved(int delta_x, int delta_y, String direction){
 		GameLogic.sendKoordinater(delta_x,delta_y,direction);
 		updateScoreTable();
+	}
+
+	public void playerShoot(){
+		System.out.println("Space Clicked!");
+		GameLogic.sendProjectileToServer();
 	}
 	
 	public String getScoreList() {
