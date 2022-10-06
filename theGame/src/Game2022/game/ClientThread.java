@@ -21,8 +21,7 @@ public class ClientThread extends Thread {
                 String line = input.readLine();
                 String[] checkLine = line.split("#");
                 String[] checkLine2 = checkLine[0].split(" ");
-                System.out.println(line.split(" ").length);
-                if (checkLine2.length != 3){
+                if (checkLine2.length == 5){
                     GameLogic.setPlayerList(modtagArraylist(new ArrayList<>(), line));
                 }
                 else{
@@ -50,14 +49,13 @@ public class ClientThread extends Thread {
     }
 
 
-    public static HashMap<Projectile, ArrayList<Projectile>> recieveProjectiles(String line){
-        HashMap<Projectile, ArrayList<Projectile>> projectiles = new HashMap<>();
+    public static ArrayList<Projectile> recieveProjectiles(String line){
+        ArrayList<Projectile> projectiles = new ArrayList<>();
         String[] projectileArray = line.split("#");
         for (int i = 0; i < projectileArray.length; i++){
             String[] thisProjectile = projectileArray[i].split(" ");
-            System.out.println(Arrays.toString(thisProjectile));
             Projectile projectile = new Projectile(new pair(Integer.parseInt(thisProjectile[0]), Integer.parseInt(thisProjectile[1])), thisProjectile[2]);
-            projectiles.put(projectile, new ArrayList<>());
+            projectiles.add(projectile);
         }
         return projectiles;
     }

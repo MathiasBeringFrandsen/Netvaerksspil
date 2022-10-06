@@ -64,8 +64,10 @@ public class ServerThread extends Thread{
 			case "right":  xPos = player.getXpos()+1; yPos = player.getYpos(); break;
 			default: break;
 		}
-		Projectile projectile = new Projectile(new pair(xPos, yPos), player.getDirection());
-		GameLogic.sendProjectileToClient(projectile);
+		if (Generel.board[yPos].charAt(xPos) == ' '){
+			Projectile projectile = new Projectile(new pair(xPos, yPos), player.getDirection());
+			GameLogic.sendProjectileToClient(projectile);
+		}
 	}
 
 

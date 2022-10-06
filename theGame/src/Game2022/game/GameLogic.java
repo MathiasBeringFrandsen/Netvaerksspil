@@ -10,59 +10,42 @@ public class GameLogic {
 	public static List<Player> players = new ArrayList<>();
 	public static Player player;
 	public static DataOutputStream outputStream;
-	public static Map<Projectile, ArrayList<Projectile>> projectiles = new HashMap<>();
+	public static ArrayList<Projectile> projectiles = new ArrayList<>();
 
 
-	public static void setPlayerList(ArrayList<Player> newPlayerList){
-		for (Player player : players){
+	public static void setPlayerList(ArrayList<Player> newPlayerList) {
+		for (Player player : players) {
 			Gui.removePlayerOnScreen(player.getLocation());
 		}
-		for (Projectile p : projectiles.keySet()){
-			for (Projectile p2 : projectiles.get(p)){
-				Gui.removeProjectileOnScreen(p2.location);
+		if (!projectiles.isEmpty()) {
+			for (Projectile p : projectiles) {
+				Gui.removeProjectileOnScreen(p.location);
 			}
-			Gui.removeProjectileOnScreen(p.location);
+			projectiles.clear();
 		}
 
-		players = newPlayerList;
-		System.out.println(newPlayerList.toString());
-		System.out.println(players.size());
-		for (Player player : players) {
-			Gui.placePlayerOnScreen(player.location, player.direction);
-		}
-	}
-
-	public static void setProjectiles(HashMap<Projectile, ArrayList<Projectile>> ps){
-		for (Projectile p : projectiles.keySet()){
-			for (Projectile p2 : projectiles.get(p)){
-				Gui.removeProjectileOnScreen(p2.location);
+			players = newPlayerList;
+			for (Player player : players) {
+				Gui.placePlayerOnScreen(player.location, player.direction);
 			}
+		}
+
+	public static void setProjectiles(ArrayList<Projectile> ps){
+		for (Projectile p : projectiles) {
 			Gui.removeProjectileOnScreen(p.location);
 		}
 		projectiles = ps;
-		ArrayList<Projectile> deleteProjectiles = new ArrayList<>();
-		moveProjectilesForward();
-		for (Projectile p : projectiles.keySet()){
-			if (Generel.board[p.getLocation().getY()].charAt(p.getLocation().getX())==' ') {
-				Gui.placeProjectileOnScreen(p, "start");
+		for (int i = 0; i < projectiles.size(); i++){
+			if (i == 0){
+				Gui.placeProjectileOnScreen(projectiles.get(i), "start");
+			}
+			else if (i < projectiles.size()-1){
+				Gui.placeProjectileOnScreen(projectiles.get(i), "middle");
 			}
 			else{
-				deleteProjectiles.add(p);
-			}
-			System.out.println(projectiles.get(p).size());
-			for (int i = 0; i < projectiles.get(p).size(); i++){
-				if (i < projectiles.get(p).size()-1){
-					Gui.placeProjectileOnScreen(projectiles.get(p).get(i), "middle");
-				}
-				else{
-					Gui.placeProjectileOnScreen(projectiles.get(p).get(i), "end");
-				}
+				Gui.placeProjectileOnScreen(projectiles.get(i),"end");
 			}
 		}
-		for (Projectile p : deleteProjectiles){
-			projectiles.remove(p);
-		}
-
 	}
 
 	public static void setOutputStream(DataOutputStream out){
@@ -103,7 +86,6 @@ public class GameLogic {
 
 	public static void sendProjectileToServer() {
 		try {
-			System.out.println("Send!");
 			outputStream.writeBytes("projectile\n");
 		}
 		catch (IOException e){
@@ -114,8 +96,14 @@ public class GameLogic {
 
 	public static void sendProjectileToClient(Projectile projectile) throws IOException {
 		String projectileString = "";
-		projectiles.put(projectile, new ArrayList<>());
-		for (Projectile projectile1 : projectiles.keySet()){
+		projectiles.add(projectile);
+		moveProjectilesForward(projectile);
+		System.out.println("Projectiles size: " + projectiles.size());
+		for (Projectile projectile1 : projectiles){
+			Player playerKilled = getPlayerAt(projectile1.getLocation().getX(),projectile1.getLocation().getY());
+			if (playerKilled != null){
+				playerHit(playerKilled);
+			}
 			projectileString = projectileString + projectile1.getLocation().getX() + " " + projectile1.getLocation().getY() + " " + projectile1.getDirection() + "#";
 		}
 
@@ -138,16 +126,24 @@ public class GameLogic {
 
 	}
 
+	public static void playerHit(Player playerKilled){
+		playerKilled.addPoints(-25);
+		playerKilled.setLocation(getRandomFreePosition());
+		try {
+			sendPlayers();
+		}
+		catch (IOException e){
+			System.out.println("PlayerHit couldnt send players: IOexception");
+		}
+	}
+
 	public static void sendPlayers() throws IOException {
 		String playerString = "";
 		for (int i = 0; i< players.size(); i++){
 			playerString = playerString + players.get(i).getName()+ " " + players.get(i).getXpos() + " " + players.get(i).getYpos() + " " + players.get(i).getDirection() + " " + players.get(i).getPoint() + "#";
 		}
-		System.out.println(playerString);
 		for (Player p : players){
-
 			p.getDataOut().writeBytes(playerString + "\n");
-
 		}
 	}
 	
@@ -201,12 +197,7 @@ public class GameLogic {
 	}
 
 	public static Projectile getProjectileAt(int x, int y) {
-		for (Projectile p : projectiles.keySet()) {
-			for (Projectile p2 : projectiles.get(p)){
-				if (p2.location.getX()==x && p2.location.getY()==y) {
-					return p;
-				}
-			}
+		for (Projectile p : projectiles) {
 			if (p.location.getX()==x && p.location.getY()==y) {
 				return p;
 			}
@@ -214,52 +205,45 @@ public class GameLogic {
 		return null;
 	}
 
-	public static void moveProjectilesForward(){
-		for (Projectile p : projectiles.keySet()){
-			ArrayList<Projectile> projectilesToAdd = new ArrayList<>();
+	public static void moveProjectilesForward(Projectile p){
 			for (int i = 1; i <= 20; i++){
 				if (p.direction.equals("up")) {
 					if (Generel.board[p.getLocation().getY() - i].charAt(p.getLocation().getX()) == ' ') {
-						Projectile newProjectile = new Projectile(new pair(p.location.getX(), p.location.getY() - i), p.direction);
-						projectilesToAdd.add(newProjectile);
+						Projectile projectile = new Projectile(new pair(p.location.getX(), p.location.getY() - i), p.direction);
+						projectiles.add(projectile);
 					}
 					else{
 						break;
 					}
-					projectiles.replace(p,projectilesToAdd);
 				}
 				if (p.direction.equals("down")) {
 					if (Generel.board[p.getLocation().getY() + i].charAt(p.getLocation().getX()) == ' ') {
-						Projectile newProjectile = new Projectile(new pair(p.location.getX(), p.location.getY()+i), p.direction);
-						projectilesToAdd.add(newProjectile);
+						Projectile projectile = new Projectile(new pair(p.location.getX(), p.location.getY()+i), p.direction);
+						projectiles.add(projectile);
 					}
 					else{
-						projectiles.replace(p,projectilesToAdd);
 						break;
 					}
 				}
 				if (p.direction.equals("left")) {
 					if (Generel.board[p.getLocation().getY()].charAt(p.getLocation().getX()-i) == ' ') {
-						Projectile newProjectile = new Projectile(new pair(p.location.getX()-i, p.location.getY()), p.direction);
-						projectilesToAdd.add(newProjectile);
+						Projectile projectile = new Projectile(new pair(p.location.getX()-i, p.location.getY()), p.direction);
+						projectiles.add(projectile);
 					}
 					else{
-						projectiles.replace(p,projectilesToAdd);
 						break;
 					}
 
 				}
 				if (p.direction.equals("right")) {
 					if (Generel.board[p.getLocation().getY()].charAt(p.getLocation().getX()+i) == ' ') {
-						Projectile newProjectile = new Projectile(new pair(p.location.getX()+i, p.location.getY()), p.direction);
-						projectilesToAdd.add(newProjectile);
+						Projectile projectile = new Projectile(new pair(p.location.getX()+i, p.location.getY()), p.direction);
+						projectiles.add(projectile);
 					}
 					else{
-						projectiles.replace(p,projectilesToAdd);
 						break;
 					}
 				}
 			}
 		}
 	}
-}
