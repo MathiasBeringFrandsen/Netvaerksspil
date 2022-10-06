@@ -79,7 +79,7 @@ public static List<Player> players = new ArrayList<>();
 	public static void sendPlayers() throws IOException {
 		String playerString = "";
 		for (int i = 0; i< players.size(); i++){
-			playerString = playerString + players.get(i).getName()+ " " + players.get(i).getXpos() + " " + players.get(i).getYpos() + " " + players.get(i).getDirection() + players.get(i).getPoint() + "#";
+			playerString = playerString + players.get(i).getName()+ " " + players.get(i).getXpos() + " " + players.get(i).getYpos() + " " + players.get(i).getDirection() + " " + players.get(i).getPoint() + "#";
 		}
 		System.out.println(playerString);
 		for (Player p : players){
