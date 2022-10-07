@@ -164,49 +164,51 @@ public class Gui extends Application {
 		});
 	}
 
-	public static void darkenSurroundings(pair newPos, int width){
-		ArrayList<Integer> lightspotsX = new ArrayList<>();
-		ArrayList<Integer> lightspotsY = new ArrayList<>();
-		for (int i = newPos.getX(); i < newPos.getX()+width; i++){
-			lightspotsX.add(i);
-		}
-		for (int i = newPos.getY(); i < newPos.getY()+width; i++){
-			lightspotsY.add(i);
-		}
+	public static void darkenSurroundings(int width){
+		for (Player player : GameLogic.players) {
+			pair newPos = player.getLocation();
+			ArrayList<Integer> lightspotsX = new ArrayList<>();
+			ArrayList<Integer> lightspotsY = new ArrayList<>();
+			for (int i = newPos.getX(); i < newPos.getX() + width; i++) {
+				lightspotsX.add(i);
+			}
+			for (int i = newPos.getY(); i < newPos.getY() + width; i++) {
+				lightspotsY.add(i);
+			}
 
-		for (int i = newPos.getX()-1; i > newPos.getX()-width; i--){
-			lightspotsX.add(i);
-		}
-		for (int i = newPos.getY()-1; i > newPos.getY()-width; i--){
-			lightspotsY.add(i);
-		}
+			for (int i = newPos.getX() - 1; i > newPos.getX() - width; i--) {
+				lightspotsX.add(i);
+			}
+			for (int i = newPos.getY() - 1; i > newPos.getY() - width; i--) {
+				lightspotsY.add(i);
+			}
 
-		System.out.println(lightspotsX);
-		System.out.println(lightspotsY);
+			System.out.println(lightspotsX);
+			System.out.println(lightspotsY);
 
-		Platform.runLater(() -> {
-			for (int y = 0; y < 20; y++) {
-				for (int x = 0; x < 20; x++) {
-					if (!(lightspotsX.contains(x) && lightspotsY.contains(y))) {
-						System.out.println(y + " " + x);
-						if (Generel.board[y].charAt(x) == ' ') {
-							fields[x][y].setGraphic(new ImageView(darken_floor));
-						} else {
-							fields[x][y].setGraphic(new ImageView(darken_wall4));
-						}
-					}
-					else{
-						if (!(y == newPos.getY() && x == newPos.getX()) && GameLogic.getPlayerAt(x,y) == null){
+			Platform.runLater(() -> {
+				for (int y = 0; y < 20; y++) {
+					for (int x = 0; x < 20; x++) {
+						if (!(lightspotsX.contains(x) && lightspotsY.contains(y))) {
+							System.out.println(y + " " + x);
 							if (Generel.board[y].charAt(x) == ' ') {
-								fields[x][y].setGraphic(new ImageView(image_floor));
+								fields[x][y].setGraphic(new ImageView(darken_floor));
 							} else {
-								fields[x][y].setGraphic(new ImageView(image_wall));
+								fields[x][y].setGraphic(new ImageView(darken_wall4));
+							}
+						} else {
+							if (!(y == newPos.getY() && x == newPos.getX()) && GameLogic.getPlayerAt(x, y) == null) {
+								if (Generel.board[y].charAt(x) == ' ') {
+									fields[x][y].setGraphic(new ImageView(image_floor));
+								} else {
+									fields[x][y].setGraphic(new ImageView(image_wall));
+								}
 							}
 						}
 					}
 				}
-			}
-		});
+			});
+		}
 	}
 
 	public static void placeProjectileOnScreen(Projectile projectile, String type){

@@ -16,7 +16,7 @@ public class ClientThread extends Thread {
 
     public void run() {
         try {
-            Thread.sleep(4000);
+            Thread.sleep(6000);
             while (true) {
                 String line = input.readLine();
                 String[] checkLine = line.split("#");
