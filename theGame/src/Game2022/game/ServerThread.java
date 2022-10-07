@@ -25,6 +25,7 @@ public class ServerThread extends Thread{
 			player = GameLogic.makePlayers(newPlayerName);
 			player.setDataOut(new DataOutputStream(connSocket.getOutputStream()));
 			GameLogic.sendPlayers();
+			GameLogic.sendChest();
 			//return something;
 			while (true){
 				String line = inFromClient.readLine();

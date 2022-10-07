@@ -27,7 +27,7 @@ public class Gui extends Application {
 	public static Image hero_right,hero_left,hero_up,hero_down;
 	public static Image fire_up, fire_down, fire_left, fire_right, fire_vertical, fire_horizontal, fire_wallNorth, fire_wallSouth, fire_wallWest, fire_wallEast;
 	public static Image darken_floor, darken_wall4;
-
+	public static Image chest;
 	
 
 	private static Label[][] fields;
@@ -85,7 +85,10 @@ public class Gui extends Application {
 			darken_floor	= new Image(getClass().getResourceAsStream("Image/darkenFloor.png"),size,size,false,false);
 			darken_wall4	= new Image(getClass().getResourceAsStream("Image/darkenWall4.png"),size,size,false,false);
 
+			chest = new Image(getClass().getResourceAsStream("Image/chest.png"), size, size, false, false);
+
 			fields = new Label[20][20];
+
 			for (int j=0; j<20; j++) {
 				for (int i=0; i<20; i++) {
 					switch (Generel.board[j].charAt(i)) {
@@ -273,6 +276,20 @@ public class Gui extends Application {
 		placePlayerOnScreen(newpos,direction);
 	}
 
+	public static void removeChestOnScreen(pair oldpos){
+		Platform.runLater(() -> {
+			fields[oldpos.getX()][oldpos.getY()].setGraphic(new ImageView(image_floor));
+		});
+	}
+
+	public static void placeChestOnScreen(pair newpos){
+		Platform.runLater(() -> {
+			int newx = newpos.getX();
+			int newy = newpos.getY();
+				fields[newx][newy].setGraphic(new ImageView(chest));
+		});
+	}
+
 	public void updateScoreTable()
 	{
 		Platform.runLater(() -> {
@@ -296,6 +313,8 @@ public class Gui extends Application {
 		}
 		return b.toString();
 	}
+
+
 
 
 
