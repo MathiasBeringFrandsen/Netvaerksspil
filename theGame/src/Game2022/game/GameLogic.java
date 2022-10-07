@@ -94,7 +94,7 @@ public class GameLogic {
 
 	}
 
-	public static void sendProjectileToClient(Projectile projectile) throws IOException {
+	public static synchronized void sendProjectileToClient(Projectile projectile) throws IOException {
 		String projectileString = "";
 		projectiles.add(projectile);
 		moveProjectilesForward(projectile);
