@@ -167,18 +167,21 @@ public class Gui extends Application {
 		});
 	}
 
+	/* Fog of war - Virker ikke helt som det skal
+
+
 	public static void darkenSurroundings(int width){
+
+		ArrayList<Integer> lightspotsX = new ArrayList<>();
+		ArrayList<Integer> lightspotsY = new ArrayList<>();
 		for (Player player : GameLogic.players) {
 			pair newPos = player.getLocation();
-			ArrayList<Integer> lightspotsX = new ArrayList<>();
-			ArrayList<Integer> lightspotsY = new ArrayList<>();
 			for (int i = newPos.getX(); i < newPos.getX() + width; i++) {
 				lightspotsX.add(i);
 			}
 			for (int i = newPos.getY(); i < newPos.getY() + width; i++) {
 				lightspotsY.add(i);
 			}
-
 			for (int i = newPos.getX() - 1; i > newPos.getX() - width; i--) {
 				lightspotsX.add(i);
 			}
@@ -213,6 +216,7 @@ public class Gui extends Application {
 			});
 		}
 	}
+*/
 
 	public static void placeProjectileOnScreen(Projectile projectile, String type){
 		Platform.runLater(() -> {

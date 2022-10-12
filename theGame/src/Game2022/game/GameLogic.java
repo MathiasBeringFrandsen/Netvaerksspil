@@ -28,6 +28,7 @@ public class GameLogic {
         players = newPlayerList;
         for (Player player : players) {
             Gui.placePlayerOnScreen(player.location, player.direction);
+            //Gui.darkenSurroundings(3); Fog of war
         }
     }
 
