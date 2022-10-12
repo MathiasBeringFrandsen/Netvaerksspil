@@ -25,10 +25,7 @@ public class GameLogic {
 		}
 
 			players = newPlayerList;
-			for (Player player : players) {
-				Gui.placePlayerOnScreen(player.location, player.direction);
-				Gui.darkenSurroundings( 4);
-			}
+			Gui.darkenSurroundings(4);
 		}
 
 	public static void setProjectiles(ArrayList<Projectile> ps){

@@ -6,6 +6,7 @@ import javafx.application.Application;
 
 public class App {
 
+
 	public static void main(String[] args) throws Exception{
 		BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
 		Socket clientSocket= new Socket("localhost",12010);
